@@ -2,6 +2,7 @@ import supertest from 'supertest';
 import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
 import { UrlModel } from '../models/url.model';
+import { UrlStatModel } from '../models/url-stat.model';
 
 const shortId = 'abcd';
 const originalUrl = 'https://google.com';
@@ -19,6 +20,7 @@ describe('Create Route', () => {
 
   afterEach(async () => {
     await UrlModel.deleteMany({});
+    await UrlStatModel.deleteMany({});
     await server.close();
   });
 
@@ -42,9 +44,21 @@ describe('Create Route', () => {
       .expect(200)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
-    const result = await UrlModel.findOne({ originalUrl });
+    const result = await UrlModel.findOne({ shortId });
 
     expect(result).toMatchObject({ originalUrl, shortId });
+  });
+
+  it('should store empty stats into database', async () => {
+    await supertest(server.server)
+      .post('/create')
+      .send({ url: 'https://google.com' })
+      .expect(200)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+
+    const result = await UrlStatModel.findOne({ shortId });
+
+    expect(result).toMatchObject({ visits: 0, shortId });
   });
 
   it('should respond with 400 if payload is incorrect', async () => {

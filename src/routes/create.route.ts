@@ -2,6 +2,7 @@ import { FastifyInstance, FastifySchema } from 'fastify';
 import { nanoid } from 'nanoid';
 import { config } from '../config';
 import { UrlModel } from '../models/url.model';
+import { UrlStatModel } from '../models/url-stat.model';
 
 interface CreateBody {
   url: string;
@@ -32,6 +33,7 @@ export const createRoute = (server: FastifyInstance): void => {
       const originalUrl = request.body.url;
 
       await UrlModel.create({ originalUrl, shortId });
+      await UrlStatModel.create({ visits: 0, shortId });
       request.log.info('url created', { originalUrl, shortId });
 
       reply.status(200).send({ originalUrl, shortUrl });

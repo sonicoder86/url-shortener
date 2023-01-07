@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { UrlModel } from '../models/url.model';
+import { UrlStatModel } from '../models/url-stat.model';
 
 interface RedirectParams {
   shortId: string;
@@ -18,7 +19,8 @@ export const redirectRoute = (server: FastifyInstance): void => {
         return;
       }
 
-      request.log.warn({ msg: 'url redirected', shortId });
+      await UrlStatModel.findOneAndUpdate({ shortId }, { $inc: { visits: 1 } });
+      request.log.info({ msg: 'url redirected', shortId });
       reply.redirect(url.originalUrl);
     },
   );
