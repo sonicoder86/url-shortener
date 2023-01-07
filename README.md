@@ -3,6 +3,7 @@
 ## Development
 
 Start the server (Fastify) locally, it'll restart on file changes automatically.
+The running application is available on [http://localhost:8080](http://localhost:8080)
 
 ```shell
 cp .env.example .env
