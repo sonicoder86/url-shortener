@@ -8,7 +8,7 @@ export const createServer = (opts?: FastifyServerOptions): FastifyInstance => {
     logger: {
       level: 'info',
     },
-    ...opts
+    ...opts,
   });
 
   indexRoute(server);
@@ -16,4 +16,4 @@ export const createServer = (opts?: FastifyServerOptions): FastifyInstance => {
   redirectRoute(server);
 
   return server;
-}
+};

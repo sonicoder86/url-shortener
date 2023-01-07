@@ -1,15 +1,22 @@
 import { config } from './config';
 import { createServer } from './server';
-import { connect } from './db';
+import { connect, disconnect } from './db';
 
 const server = createServer();
-connect().catch(console.error);
 
-server.listen({ port: config.port }, (err) => {
+connect()
+  .then(() => {
+    server.listen({ port: config.port }, (err) => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
+      }
+    });
+  })
+  .catch(console.error);
 
-
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
+process.once('SIGTERM', async () => {
+  await server.close();
+  await disconnect();
+  console.log('SIGINT received');
 });
