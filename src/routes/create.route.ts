@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifySchema } from 'fastify';
 import { nanoid } from 'nanoid';
 import { config } from '../config';
-import { Url } from '../models/url.model';
+import { UrlModel } from '../models/url.model';
 
 interface CreateBody {
   url: string;
@@ -31,7 +31,7 @@ export const createRoute = (server: FastifyInstance): void => {
       const shortUrl = `${config.baseUrl}/redirect/${shortId}`;
       const originalUrl = request.body.url;
 
-      await Url.create({ originalUrl, shortId });
+      await UrlModel.create({ originalUrl, shortId });
       request.log.info('url created', { originalUrl, shortId });
 
       reply.status(200).send({ originalUrl, shortUrl });

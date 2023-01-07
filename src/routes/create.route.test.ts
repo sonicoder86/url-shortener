@@ -1,7 +1,7 @@
 import supertest from 'supertest';
 import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
-import { Url } from '../models/url.model';
+import { UrlModel } from '../models/url.model';
 
 const shortId = 'abcd';
 const originalUrl = 'https://google.com';
@@ -18,7 +18,7 @@ describe('Create Route', () => {
   });
 
   afterEach(async () => {
-    await Url.deleteMany({});
+    await UrlModel.deleteMany({});
     await server.close();
   });
 
@@ -42,7 +42,7 @@ describe('Create Route', () => {
       .expect(200)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
-    const result = await Url.findOne({ originalUrl });
+    const result = await UrlModel.findOne({ originalUrl });
 
     expect(result).toMatchObject({ originalUrl, shortId });
   });
@@ -57,5 +57,17 @@ describe('Create Route', () => {
     expect(response.body.message).toEqual(
       "body must have required property 'url'",
     );
+  });
+
+  it('should not call database store if payload is incorrect', async () => {
+    jest.spyOn(UrlModel, 'create');
+
+    await supertest(server.server)
+      .post('/create')
+      .send({ name: 'https://google.com' })
+      .expect(400)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+
+    expect(UrlModel.create).not.toHaveBeenCalled();
   });
 });

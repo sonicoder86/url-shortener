@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { Url } from '../models/url.model';
+import { UrlModel } from '../models/url.model';
 
 interface RedirectParams {
   shortId: string;
@@ -10,7 +10,7 @@ export const redirectRoute = (server: FastifyInstance): void => {
     '/redirect/:shortId',
     async (request, reply) => {
       const shortId = request.params.shortId;
-      const url = await Url.findOne({ shortId });
+      const url = await UrlModel.findOne({ shortId });
 
       if (!url) {
         reply.code(404).send();

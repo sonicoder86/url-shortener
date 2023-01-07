@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 import { createServer } from '../server';
-import { Url } from '../models/url.model';
+import { UrlModel } from '../models/url.model';
 import { FastifyInstance } from 'fastify';
 
 const shortId = 'abcd';
@@ -15,12 +15,12 @@ describe('Create Route', () => {
   });
 
   afterEach(async () => {
-    await Url.deleteMany({});
+    await UrlModel.deleteMany({});
     await server.close();
   });
 
   it('should create shortened url', async () => {
-    await Url.create({ originalUrl, shortId });
+    await UrlModel.create({ originalUrl, shortId });
 
     await supertest(server.server)
       .get('/redirect/abcd')

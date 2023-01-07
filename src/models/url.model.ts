@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-export const Url = mongoose.model(
+export const UrlModel = mongoose.model(
   'Url',
   new Schema({
     originalUrl: { type: String, required: true },
