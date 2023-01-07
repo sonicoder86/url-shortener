@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifySchema } from 'fastify';
 import { nanoid } from 'nanoid';
 import { config } from '../config';
 import { Url } from '../models/url.model';
@@ -12,9 +12,20 @@ interface CreateResponse {
   shortUrl: string;
 }
 
+const schema: FastifySchema = {
+  body: {
+    type: 'object',
+    required: ['url'],
+    properties: {
+      url: { type: 'string' },
+    },
+  },
+};
+
 export const createRoute = (server: FastifyInstance): void => {
   server.post<{ Body: CreateBody; Reply: CreateResponse }>(
     '/create',
+    { schema },
     async (request, reply) => {
       const shortId = nanoid(13);
       const shortUrl = `${config.baseUrl}/redirect/${shortId}`;

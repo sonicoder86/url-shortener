@@ -1,4 +1,5 @@
 import supertest from 'supertest';
+import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
 import { Url } from '../models/url.model';
 import { connect, disconnect } from '../db';
@@ -10,6 +11,8 @@ jest.mock('nanoid', () => {
 });
 
 describe('Create Route', () => {
+  let server: FastifyInstance;
+
   beforeAll(async () => {
     await connect();
   });
@@ -18,14 +21,17 @@ describe('Create Route', () => {
     await disconnect();
   });
 
+  beforeEach(async () => {
+    server = createServer({ logger: false });
+    await server.ready();
+  });
+
   afterEach(async () => {
     await Url.deleteMany({});
+    await server.close();
   });
 
   it('should create shortened url', async () => {
-    const server = createServer({ logger: false });
-    await server.ready();
-
     const response = await supertest(server.server)
       .post('/create')
       .send({ url: originalUrl })
@@ -39,9 +45,6 @@ describe('Create Route', () => {
   });
 
   it('should store redirect url into database', async () => {
-    const server = createServer({ logger: false });
-    await server.ready();
-
     await supertest(server.server)
       .post('/create')
       .send({ url: 'https://google.com' })
@@ -51,5 +54,17 @@ describe('Create Route', () => {
     const result = await Url.findOne({ originalUrl });
 
     expect(result).toMatchObject({ originalUrl, shortId });
+  });
+
+  it('should respond with 400 if payload is incorrect', async () => {
+    const response = await supertest(server.server)
+      .post('/create')
+      .send({ name: 'https://google.com' })
+      .expect(400)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+
+    expect(response.body.message).toEqual(
+      "body must have required property 'url'",
+    );
   });
 });
