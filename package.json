@@ -7,7 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "dev": "ts-node-dev -r dotenv/config src/index.ts",
-    "test": "jest src --setupFiles dotenv/config --runInBand",
+    "test": "jest src --runInBand",
     "lint": "eslint src/**/*.ts --fix"
   },
   "keywords": [],
