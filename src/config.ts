@@ -3,5 +3,5 @@ export const config = {
   baseUrl: process.env.BASE_URL as string,
   mongodb: {
     url: process.env.MONGODB_URL as string,
-  }
+  },
 };

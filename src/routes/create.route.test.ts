@@ -2,7 +2,6 @@ import supertest from 'supertest';
 import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
 import { Url } from '../models/url.model';
-import { connect, disconnect } from '../db';
 
 const shortId = 'abcd';
 const originalUrl = 'https://google.com';
@@ -12,14 +11,6 @@ jest.mock('nanoid', () => {
 
 describe('Create Route', () => {
   let server: FastifyInstance;
-
-  beforeAll(async () => {
-    await connect();
-  });
-
-  afterAll(async () => {
-    await disconnect();
-  });
 
   beforeEach(async () => {
     server = createServer({ logger: false });

@@ -1,32 +1,26 @@
 import supertest from 'supertest';
 import { createServer } from '../server';
 import { Url } from '../models/url.model';
-import { connect, disconnect } from '../db';
+import { FastifyInstance } from 'fastify';
 
 const shortId = 'abcd';
 const originalUrl = 'https://google.com';
 
 describe('Create Route', () => {
-  beforeAll(async () => {
-    await connect();
-  });
+  let server: FastifyInstance;
 
-  afterAll(async () => {
-    await disconnect();
+  beforeEach(async () => {
+    server = createServer({ logger: false });
+    await server.ready();
   });
 
   afterEach(async () => {
     await Url.deleteMany({});
+    await server.close();
   });
 
   it('should create shortened url', async () => {
-    const server = createServer({ logger: false });
-    await server.ready();
-
-    await Url.create({
-      originalUrl,
-      shortId,
-    });
+    await Url.create({ originalUrl, shortId });
 
     await supertest(server.server)
       .get('/redirect/abcd')
@@ -35,9 +29,6 @@ describe('Create Route', () => {
   });
 
   it('should return not found when url doesnt exist', async () => {
-    const server = createServer({ logger: false });
-    await server.ready();
-
     await supertest(server.server).get('/redirect/abcd').expect(404);
   });
 });
