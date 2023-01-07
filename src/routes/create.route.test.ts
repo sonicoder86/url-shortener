@@ -3,6 +3,7 @@ import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
 import { UrlModel } from '../models/url.model';
 import { UrlStatModel } from '../models/url-stat.model';
+import { UrlService } from '../services/url.service';
 
 const shortId = 'abcd';
 const originalUrl = 'https://google.com';
@@ -19,8 +20,7 @@ describe('Create Route', () => {
   });
 
   afterEach(async () => {
-    await UrlModel.deleteMany({});
-    await UrlStatModel.deleteMany({});
+    await UrlService.cleanup();
     await server.close();
   });
 
@@ -74,7 +74,7 @@ describe('Create Route', () => {
   });
 
   it('should not call database store if payload is incorrect', async () => {
-    jest.spyOn(UrlModel, 'create');
+    jest.spyOn(UrlService, 'create');
 
     await supertest(server.server)
       .post('/create')
@@ -82,6 +82,6 @@ describe('Create Route', () => {
       .expect(400)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
-    expect(UrlModel.create).not.toHaveBeenCalled();
+    expect(UrlService.create).not.toHaveBeenCalled();
   });
 });

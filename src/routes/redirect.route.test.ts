@@ -1,8 +1,9 @@
 import supertest from 'supertest';
+import { FastifyInstance } from 'fastify';
 import { createServer } from '../server';
 import { UrlModel } from '../models/url.model';
-import { FastifyInstance } from 'fastify';
 import { UrlStatModel } from '../models/url-stat.model';
+import { UrlService } from '../services/url.service';
 
 const shortId = 'abcd';
 const originalUrl = 'https://google.com';
@@ -16,8 +17,7 @@ describe('Create Route', () => {
   });
 
   afterEach(async () => {
-    await UrlModel.deleteMany({});
-    await UrlStatModel.deleteMany({});
+    await UrlService.cleanup();
     await server.close();
   });
 
