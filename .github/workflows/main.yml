@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 env:
-  CI_COMMIT_ID: ${{ github.sha }}
-  CI_REPO_NAME: ${{ github.repository }}
+  BASE_URL: 'http://localhost:8080'
+  MONGODB_URL: 'mongodb://root:rootpassword@localhost:27017/admin'
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   NPM_TOKEN: ${{ secrets.NPM_DEPLOYER_TOKEN }}
 
@@ -16,12 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node
+      - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
           cache-dependency-path: 'package-lock.json'
           cache: 'npm'
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 4.2
+          mongodb-port: 27017
+          mongodb-username: 'root'
+          mongodb-password: 'rootpassword'
+          mongodb-db: 'admin'
       - name: Npm install
         run: npm ci
       - name: Lint
