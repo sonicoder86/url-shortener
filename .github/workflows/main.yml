@@ -7,8 +7,6 @@ on:
 env:
   BASE_URL: 'http://localhost:8080'
   MONGODB_URL: 'mongodb://root:rootpassword@localhost:27017/admin'
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  NPM_TOKEN: ${{ secrets.NPM_DEPLOYER_TOKEN }}
 
 jobs:
   test:
@@ -34,6 +32,8 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
+      - name: Test
+        run: npm test
 
   deploy:
     name: Deploy
