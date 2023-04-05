@@ -34,6 +34,14 @@ jobs:
         run: npm run lint
       - name: Test
         run: npm test
+      - name: Build
+        run: npm run build
+      - name: Deploy
+        uses: akhileshns/heroku-deploy@v3.12.13
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: 'vd-url-shortener'
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
 
   deploy:
     name: Deploy
